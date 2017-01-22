@@ -72,7 +72,6 @@ module Snort
 
     def self.parse(path,*options)
       rf=RuleFile.new({path: path}.merge(Hash[*options])).read!
-      rf.rules.each {|r| r.rule_file=rf}
       yield rf if block_given?
       rf
     end
@@ -94,7 +93,7 @@ module Snort
       File.open(path,"r") do |file|
         file.readlines
             .grep(include_regexp)
-            .map {|line| Snort::Rule.parse(line.chomp) }
+            .map {|line| r=Snort::Rule.parse(line.chomp); r.rule_file=self; r }
             .reject {|rule| required_options.any? {|o| rule.send(o).nil?}}
             .select {|rule| filter.call(rule) }
       end
