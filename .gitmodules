@@ -1,0 +1,6 @@
+[submodule "vendor/crs"]
+	path = vendor/crs
+	url = git://github.com/ryanbreed/owasp-modsecurity-crs
+[submodule "vendor/patterns"]
+	path = vendor/patterns
+	url = git://github.com/ryanbreed/logstash-patterns-core
