@@ -1,6 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    cabin (0.9.0)
     coderay (1.1.1)
     elasticsearch (5.0.1)
       elasticsearch-api (= 5.0.1)
@@ -12,6 +13,8 @@ GEM
       multi_json
     faraday (0.11.0)
       multipart-post (>= 1.2, < 3)
+    jls-grok (0.11.4)
+      cabin (>= 0.6.0)
     method_source (0.8.2)
     multi_json (1.12.1)
     multipart-post (2.0.0)
@@ -36,6 +39,7 @@ PLATFORMS
 
 DEPENDENCIES
   elasticsearch
+  jls-grok
   packetfu
   pry
   pry-doc

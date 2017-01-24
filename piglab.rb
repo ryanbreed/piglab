@@ -27,15 +27,15 @@ module Snort
   end
   def self.match_rule_types(*keywords)
     keywords=action_keywords if keywords.empty?
-    Regexp.new '\A\s*#*\s*(' + keywords.map(&:to_s).join('|') + ')\s+' 
+    Regexp.new '\A\s*#*\s*(' + keywords.map(&:to_s).join('|') + ')\s+'
   end
   class RuleCollection
-    attr_accessor :path, :glob
-    attr_reader   :files
+    attr_accessor :path, :glob, :selected, :files
     def initialize(*args)
       Hash[*args].each {|k,v| self.send(format("%s=",k),v)}
       @glob ||= '*.rules'
       @files ||= []
+      @selected ||=[]
     end
     def add_file(fn, parse_options={})
       new_rf=Snort::RuleFile.parse(fn,*parse_options).read!
@@ -54,6 +54,14 @@ module Snort
            end
     end
     def rules
+      case
+      when selected.empty?
+        all_rules
+      else
+        selected
+      end
+    end
+    def all_rules
       files.flat_map(&:rules)
     end
     def self.parse(path, glob: '*.rules', parse_options: {})
@@ -61,6 +69,32 @@ module Snort
       collection.file_names.each {|fn| collection.add_file(fn,*parse_options) }
       yield collection if block_given?
       collection
+    end
+    def keymatch(key,*match_args)
+      rexp=Regexp.new(*match_args)
+      selected = rules.select { |rule| rule.send(key)&.match(rexp ) }
+      rfs = selected.map(&:rule_file).sort.uniq
+      RuleCollection.new(selected: selected, files: rfs)
+    end
+
+    def argmatch(*match_args)
+      rexp=Regexp.new(*match_args)
+      selected = rules.select { |rule| rule.options.any? {|o| o.arguments.any? {|a| a.match(rexp)}} }
+      rfs = selected.map(&:rule_file).sort.uniq
+      RuleCollection.new(selected: selected, files: rfs)
+    end
+
+    def method_missing(meth,*args)
+      case meth.to_s
+      when /\Amatches_(?<keyword>[a-z]+)\z/
+        keyword=$~[:keyword]
+        rexp=Regexp.new(*args)
+        selected = rules.select { |rule| rule.send(keyword)&.match(rexp ) }
+        rfs = selected.map(&:rule_file).sort.uniq
+        RuleCollection.new(selected: selected, files: rfs)
+      else
+        raise NoMethodError, meth
+      end
     end
   end
   class RuleFile
@@ -84,6 +118,10 @@ module Snort
       @rules ||= []
     end
 
+    def <=>(other)
+      path <=> other.path
+    end
+
     def read!
       @rules=read
       self
@@ -101,9 +139,9 @@ module Snort
 
     def action_stats
       Hash[
-        Snort.action_keywords.map do |keyword| 
+        Snort.action_keywords.map do |keyword|
           [
-            keyword.to_sym, 
+            keyword.to_sym,
             rules.count { |r| r.action==keyword }
           ]
         end
@@ -111,8 +149,8 @@ module Snort
     end
 
     def stats
-     
-      { 
+
+      {
         size:     rules.size,
         enabled:  rules.count(&:enabled),
         disabled: rules.count {|r| r.enabled==false}
@@ -139,6 +177,9 @@ module Snort
       else
         raise NoMethodError, meth
       end
+    end
+    def has_argument?(arg)
+      options.any? {|o| o.arguments.include?(arg)}
     end
     def sets_flowbit?(name=".*")
       self.flowbits&.match(Regexp.new('\Aset,\s*'+name))
