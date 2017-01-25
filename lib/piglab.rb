@@ -3,6 +3,7 @@ require 'packetfu'
 require 'snort/rule'
 require 'base64'
 require 'grok-pure'
+require 'yaml'
 require 'erb'
 
 require 'monkeypatches'

@@ -13,7 +13,7 @@ namespace :snort do
     task :nostubs do
     end
   end
-  namespace :ruletest do
+  namespace :test do
     desc "run test rules against all pcaps"
     task :all => "snort:conf:ruletest" do
     end
@@ -24,7 +24,11 @@ namespace :snort do
   namespace :run do
     desc "run all rules against all pcaps"
     task :all => "snort:conf:full" do
-      %x{ snort --suppress-config-log -q -c conf/generated_full.conf --pcap-dir pcap }
+      %x{ snort --suppress-config-log -q -c conf/generated.conf --pcap-dir pcap }
+    end
+    desc "run all rules against specific pcap collections"
+    task :only => "snort:conf:full" do
+      %x{ snort --suppress-config-log -q -c conf/generated.conf --pcap-dir pcap }
     end
   end
   desc "generate so_rule stubs"

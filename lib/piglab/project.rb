@@ -1,7 +1,7 @@
 module Piglab
   class Project
     attr_accessor :root, :templates, :config, :expand_sections
-    attr_reader   :conf_dir, :rules_dir, :so_rule_stubs
+    attr_reader   :conf_dir, :rules_dir, :so_rule_stubs, :patterns
     def initialize(*args)
       Hash[*args].each {|k,v| self.send(format('%s=',k),v)}
       @config    ||= snort_defaults
@@ -14,6 +14,32 @@ module Piglab
       @expand_sections = false if @expand_sections.nil?
       yield self if block_given?
       self
+    end
+
+    def render_snort_conf(expand: nil, template: 'snort.conf.erb')
+      expand_sections= expand unless expand.nil?
+      snort_conf_erb = File.join(templates, template)
+      tpl = ERB.new(File.read(snort_conf_erb),nil,"<>>-")
+      state = binding
+      tpl.result(state)
+    end
+
+    def inspect
+      {
+        project: project_paths,
+        snort: config
+      }.to_yaml
+    end
+
+    def project_paths
+      {
+        root: root,
+        conf_dir: conf_dir,
+        rules_dir: rules_dir,
+        so_stubs: so_rule_stubs,
+        templates: templates,
+        patterns: patterns
+      }
     end
 
     def snort_defaults
@@ -31,12 +57,6 @@ module Piglab
       }
     end
 
-    def render_snort_conf(expand: false, template: 'snort.conf.erb')
-      snort_conf_erb = File.join(templates, template)
-      tpl = ERB.new(File.read(snort_conf_erb),nil,"<>>-")
-      state = binding
-      tpl.result(state)
-    end
     def git_last_commit
       IO.popen("git log -1")
         .readlines
