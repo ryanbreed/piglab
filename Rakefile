@@ -17,7 +17,7 @@ namespace :snort do
     desc "run test rules against all pcaps"
     task :all => "snort:conf:ruletest" do
     end
-    desc "run test rules against single test dir"
+    desc "run test rules against specific pcap collection"
     task :only => "snort:conf:ruletest" do
     end
   end

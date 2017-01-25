@@ -17,7 +17,7 @@ module Piglab
     end
 
     def render_snort_conf(expand: nil, template: 'snort.conf.erb')
-      expand_sections= expand unless expand.nil?
+      @expand_sections= expand unless expand.nil?
       snort_conf_erb = File.join(templates, template)
       tpl = ERB.new(File.read(snort_conf_erb),nil,"<>>-")
       state = binding
