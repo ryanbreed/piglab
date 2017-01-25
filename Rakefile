@@ -1,14 +1,13 @@
 require 'erb'
-namespace :snort do 
+require 'piglab'
+
+namespace :snort do
   namespace :conf do
     desc "generate full config"
     task :full do
-      %x{ cp -v conf/snort_linux.conf conf/generated_full.conf }
     end
     desc "generate ruletest config"
     task :ruletest do
-      puts "missing"
-      #%x{ cp -v conf/snort_linux.conf conf/generated_full.conf }
     end
     desc "generate nostub config"
     task :nostubs do
