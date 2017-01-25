@@ -9,7 +9,7 @@ module Snort
     end
 
     def self.parse(path, glob: '*.rules', parse_options: {})
-      collection=RuleCollection.new(path: path, glob: glob)
+      collection=Collection.new(path: path, glob: glob)
       collection.file_names.each {|fn| collection.add_file(fn,*parse_options) }
       yield collection if block_given?
       collection
@@ -17,7 +17,7 @@ module Snort
 
     def add_file(fn, parse_options={})
       new_rf=Snort::RuleFile.parse(fn,*parse_options).read!
-      files.push(new_rf) unless has?(new_rf)
+      files.push(new_rf) unless has_file?(new_rf)
     end
 
     def has_file?(other)
