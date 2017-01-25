@@ -4,3 +4,9 @@
 [submodule "vendor/patterns"]
 	path = vendor/patterns
 	url = git://github.com/ryanbreed/logstash-patterns-core
+[submodule "vendor/ruby-grok"]
+	path = vendor/ruby-grok
+	url = https://github.com/jordansissel/ruby-grok
+[submodule "vendor/grokdebug"]
+	path = vendor/grokdebug
+	url = https://github.com/ryanbreed/grokdebug
