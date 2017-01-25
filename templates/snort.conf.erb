@@ -1,0 +1,15 @@
+config policy_mode:tap
+include net_vars.conf
+include path_vars.conf
+include classification.config
+include reference.config
+include decoder.conf
+include engine_detection.conf
+include engine_dynamic.conf
+include engine_preproc.conf
+include included_rules.conf
+include included_so_rules.conf
+include output.conf
+include $RULE_PATH/local.rules
+
+

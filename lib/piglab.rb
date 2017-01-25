@@ -3,11 +3,31 @@ require 'packetfu'
 require 'snort/rule'
 require 'base64'
 require 'grok-pure'
+require 'erb'
 
 require "piglab/version"
 require 'monkeypatches'
 
 module Piglab
+  def self.config_defaults
+    {
+      var_net:          "net_vars.conf",
+      var_path:         "path_vars.conf",
+      output:           "output.conf",
+      engine_decoder:   "decoder.conf",
+      engine_detection: "engine_detection.conf",
+      engine_dynamic:   "engine_detection.conf",
+      engine_decoder:   "engine_dynamic.conf",
+      rules_base:       "included_rules.conf",
+      rules_so_stubs:   "included_so_rules.conf",
+      rules_local:      '$RULE_PATH/local.rules',
+      rules_test:       nil
+    }
+  end
+
+  def self.configure(mode=config_defaults)
+    
+  end
   def assemble_match(str)
     str.gsub(/"/,"")
        .split("|")
