@@ -8,7 +8,20 @@ For now:
     git clone https://github.com/ryanbreed/piglab
     cd piglab && bash ./bin/setup
 
-## Usage
+## Usage - guard mode
+There is a Guard configuration that will automatically run tests as
+you modify snort's configuration or rules. The specific tests will be
+invoked depending on which type of modification has been made.
+
+This will, for example, ensure that an update to snort's config will
+pass a syntax check, or the introduction of a new rule fires on
+required pcaps and doesn't fire on others.
+
+To get guard mode started: `bundle exec guard`
+
+{TODO: slightly incomplete}
+
+## Usage - rake mode
 
 There are a bunch of Rake tasks for running snort in various configs.
 
@@ -21,6 +34,7 @@ Use `bundle exec rake -T snort` for more details:
     snort:test:only      # run test rules against specific pcap collection
     ...
 
+## Usage - console mode
 There is also an interactive pry console for your project:
 
     13:41 $ bundle exec console
