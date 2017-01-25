@@ -1,7 +1,36 @@
+require 'erb'
 namespace :snort do 
+  namespace :conf do
+    desc "generate full config"
+    task :full do
+      %x{ cp -v conf/snort_linux.conf conf/generated_full.conf }
+    end
+    desc "generate ruletest config"
+    task :ruletest do
+      puts "missing"
+      #%x{ cp -v conf/snort_linux.conf conf/generated_full.conf }
+    end
+    desc "generate nostub config"
+    task :nostubs do
+    end
+  end
+  namespace :ruletest do
+    desc "run test rules against all pcaps"
+    task :all => "snort:conf:ruletest" do
+    end
+    desc "run test rules against single test dir"
+    task :only => "snort:conf:ruletest" do
+    end
+  end
+  namespace :run do
+    desc "run all rules against all pcaps"
+    task :all => "snort:conf:full" do
+      %x{ snort --suppress-config-log -q -c conf/generated_full.conf --pcap-dir pcap }
+    end
+  end
   desc "generate so_rule stubs"
-  task :so_stubs do
-    %x{ snort -c snort.conf --dump-dynamic-rules=/etc/snort/so_rule_stubs }
+  task :so_stubs => "snort:conf:nostubs" do
+    %x{ snort --suppress-config-log -q -c conf/generated_nostubs.conf --dump-dynamic-rules=/etc/snort/so_rule_stubs }
   end
 end
 require "bundler/gem_tasks"

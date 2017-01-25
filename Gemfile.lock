@@ -23,11 +23,18 @@ GEM
       pry (>= 0.9.12)
       shellany (~> 0.0)
       thor (>= 0.18.1)
+    guard-bundler (2.1.0)
+      bundler (~> 1.0)
+      guard (~> 2.2)
+      guard-compat (~> 1.1)
     guard-compat (1.2.1)
     guard-rspec (4.7.3)
       guard (~> 2.1)
       guard-compat (~> 1.1)
       rspec (>= 2.99.0, < 4.0)
+    guard-shell (0.7.1)
+      guard (>= 2.0.0)
+      guard-compat (~> 1.0)
     jls-grok (0.10.10)
       cabin (~> 0.5.0)
     listen (3.1.5)
@@ -81,7 +88,9 @@ PLATFORMS
 
 DEPENDENCIES
   bundler (~> 1.14)
+  guard-bundler
   guard-rspec
+  guard-shell
   piglab!
   pry
   pry-doc
