@@ -12,13 +12,15 @@ include reference.config
 
 <% @config.each do |section, filename| %>
 <% next if filename.nil? -%>
-### BEGIN SECTION: <%= section.to_s %>
+###
+### BEGIN  <%= section.to_s %>
+###
 <% if @expand_sections %>
-<%= File.read(File.join(conf_dir,filename)) %>
+<%= File.read(File.join(conf_dir,filename)) -%>
 <% else -%>
 include <%= filename %>
 <% end %>
-### END SECTION: <%= section.to_s %>
+### END <%= section.to_s %>
 <% end -%>
 ##
 ## STATUS OF WORKING REPO
