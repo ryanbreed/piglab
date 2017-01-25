@@ -5,3 +5,4 @@ alert tcp $EXTERNAL_NET any -> $PGSQL_SERVERS $PGSQL_PORTS (msg:"SERVER-POSTGRES
 alert tcp $EXTERNAL_NET any -> $PGSQL_SERVERS $PGSQL_PORTS (msg:"SERVER-POSTGRES alter user with superuser"; flow:to_server,established; content:"ALTER USER"; nocase; content:"WITH SUPERUSER"; nocase; within:32; classtype:attempted-admin; sid:1500002; rev:1;)
 
 output alert_csv: stdout timestamp,sig_generator,sig_id,sig_rev,proto,src,srcport,dst,dstport,msg
+# END

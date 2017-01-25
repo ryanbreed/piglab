@@ -2,10 +2,13 @@ require 'erb'
 require 'piglab'
 
 namespace :snort do
+  desc "generate full config"
+  task :conf do
+    os=RbConfig::CONFIG["target_os"].gsub(/\d+/,'')
+    snort_conf=format("conf/snort_%s.conf",os)
+    %x{ cp #{snort_conf} conf/generated.conf }
+  end
   namespace :conf do
-    desc "generate full config"
-    task :full do
-    end
     desc "generate ruletest config"
     task :ruletest do
     end
@@ -21,13 +24,13 @@ namespace :snort do
     task :only => "snort:conf:ruletest" do
     end
   end
+  desc "run all rules against all pcaps"
+  task :run => "snort:conf" do
+    %x{ snort --suppress-config-log -q -c conf/generated.conf --pcap-dir pcap }
+  end
   namespace :run do
-    desc "run all rules against all pcaps"
-    task :all => "snort:conf:full" do
-      %x{ snort --suppress-config-log -q -c conf/generated.conf --pcap-dir pcap }
-    end
     desc "run all rules against specific pcap collections"
-    task :only => "snort:conf:full" do
+    task :only => "snort:conf" do
       %x{ snort --suppress-config-log -q -c conf/generated.conf --pcap-dir pcap }
     end
   end

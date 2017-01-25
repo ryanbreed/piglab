@@ -14,5 +14,6 @@
 /spec/reports/
 /tmp/
 
+/conf/generated.conf
 # rspec failure tracking
 .rspec_status
