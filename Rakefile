@@ -5,15 +5,30 @@ namespace :snort do
   namespace :conf do
     desc "generate full config"
     task :full do
-      os=RbConfig::CONFIG["target_os"].gsub(/\d+/,'')
-      snort_conf=format("conf/snort_%s.conf",os)
-      %x{ cp #{snort_conf} conf/generated.conf }
+      config = Piglab::Project.snort_defaults
+      puts "generating sections: #{config.keys.map(&:to_s).join(', ')}"
+      project = Piglab.project(config: config)
+      File.open('conf/generated.conf','w') do |snort|
+        snort.write(project.render_snort_conf(expand: true))
+      end
     end
     desc "generate ruletest config"
     task :ruletest do
+      config = Piglab::Project.snort_defaults(without: [:rules_base,:rules_so_stubs])
+      puts "generating sections: #{config.keys.map(&:to_s).join(', ')}"
+      project = Piglab.project(config: config)
+      File.open('conf/generated.conf','w') do |snort|
+        snort.write(project.render_snort_conf(expand: true))
+      end
     end
     desc "generate nostub config"
     task :nostubs do
+      config = Piglab::Project.snort_defaults(without: [:rules_so_stubs])
+      puts "generating sections: #{config.keys.map(&:to_s).join(', ')}"
+      project = Piglab.project(config: config)
+      File.open('conf/generated.conf','w') do |snort|
+        snort.write(project.render_snort_conf(expand: true))
+      end
     end
   end
   namespace :test do
