@@ -1,10 +1,13 @@
 # A sample Guardfile
 # More info at https://github.com/guard/guard#readme
 
+require 'piglab'
+
 ## Uncomment and set this to only include directories you want to watch
 #directories %w( lib conf spec ).select{|d| Dir.exists?(d) ? d : UI.warning("Directory #{d} does not exist")}
 
 ignore %r{^pcap/}
+@project = Piglab.project
 
 guard :rspec, cmd: "bundle exec rspec" do
   require "guard/rspec/dsl"
@@ -34,15 +37,20 @@ guard :bundler do
   files.each { |file| watch(helper.real_path(file)) }
 end
 
-# Add files and commands to this file, like the example:
-#   watch(%r{file/path}) { `command(s)` }
-#
+guard 'rake', :task => 'snort:conf:full' do
+
+  filter(%r{^conf/(snort_macos|snort_linux|generated).conf})
+  watch(%r{^conf/*.conf})
+
+end
+
 guard :shell do
+
   os=RbConfig::CONFIG["target_os"].gsub(/\d+/,'')
-  snort_conf=format("conf/snort_%s.conf",os)
-  filter(%r{^conf/generated.conf})
+  snort_conf="conf/generated.conf"
+  snort_conf_re=%r{^#{snort_conf}}
   filter(%r{^conf/rules/local.rules})
-  watch(%r{^#{snort_conf}}) do |m|
+  watch(snort_conf_re) do |m|
     `time snort -r pcap/boring/one_packet.pcap -c #{snort_conf} -T`
   end
 

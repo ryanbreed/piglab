@@ -28,6 +28,9 @@ GEM
       guard (~> 2.2)
       guard-compat (~> 1.1)
     guard-compat (1.2.1)
+    guard-rake (1.0.0)
+      guard
+      rake
     guard-rspec (4.7.3)
       guard (~> 2.1)
       guard-compat (~> 1.1)
@@ -89,6 +92,7 @@ PLATFORMS
 DEPENDENCIES
   bundler (~> 1.14)
   guard-bundler
+  guard-rake
   guard-rspec
   guard-shell
   piglab!
@@ -98,4 +102,4 @@ DEPENDENCIES
   rspec (~> 3.0)
 
 BUNDLED WITH
-   1.14.2
+   1.14.3
