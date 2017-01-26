@@ -2,13 +2,13 @@ require 'erb'
 require 'piglab'
 
 namespace :snort do
-  desc "generate full config"
-  task :conf do
-    os=RbConfig::CONFIG["target_os"].gsub(/\d+/,'')
-    snort_conf=format("conf/snort_%s.conf",os)
-    %x{ cp #{snort_conf} conf/generated.conf }
-  end
   namespace :conf do
+    desc "generate full config"
+    task :full do
+      os=RbConfig::CONFIG["target_os"].gsub(/\d+/,'')
+      snort_conf=format("conf/snort_%s.conf",os)
+      %x{ cp #{snort_conf} conf/generated.conf }
+    end
     desc "generate ruletest config"
     task :ruletest do
     end
@@ -24,19 +24,22 @@ namespace :snort do
     task :only => "snort:conf:ruletest" do
     end
   end
-  desc "run all rules against all pcaps"
-  task :run => "snort:conf" do
-    %x{ snort --suppress-config-log -q -c conf/generated.conf --pcap-dir pcap }
-  end
   namespace :run do
+    desc "run all rules against all pcaps"
+    task :all => "snort:conf" do
+      conf="conf/generated.conf"
+      pcap="pcap"
+      puts "running #{conf} against #{pcap}"
+      %x{ snort --suppress-config-log -q -c #{conf} --pcap-dir #{pcap} --pcap-reset --pcap-show }
+    end
     desc "run all rules against specific pcap collections"
     task :only => "snort:conf" do
-      %x{ snort --suppress-config-log -q -c conf/generated.conf --pcap-dir pcap }
+      %x{ snort --suppress-config-log -c conf/generated.conf --pcap-dir pcap }
     end
   end
   desc "generate so_rule stubs"
   task :so_stubs => "snort:conf:nostubs" do
-    %x{ snort --suppress-config-log -q -c conf/generated_nostubs.conf --dump-dynamic-rules=/etc/snort/so_rule_stubs }
+    %x{ snort --suppress-config-log -q -c conf/generated_nostubs.conf --dump-dynamic-rules=so_rule_stubs }
   end
 end
 require "bundler/gem_tasks"

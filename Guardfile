@@ -40,13 +40,14 @@ end
 guard :shell do
   os=RbConfig::CONFIG["target_os"].gsub(/\d+/,'')
   snort_conf=format("conf/snort_%s.conf",os)
+  filter(%r{^conf/generated.conf})
   filter(%r{^conf/rules/local.rules})
-  watch(%r{^#{snort_conf}}) do |m| 
-    `time snort -r pcap/boring/one_packet.pcap -A console -c #{snort_conf} -T`
+  watch(%r{^#{snort_conf}}) do |m|
+    `time snort -r pcap/boring/one_packet.pcap -c #{snort_conf} -T`
   end
 
-  watch(%r{^conf/.*/*.rules}) do |m| 
-    `time snort --suppress-config-log --require-rule-sid -r pcap/boring/one_packet.pcap -A console -c #{snort_conf} -T`
+  watch(%r{^conf/.*/*.rules}) do |m|
+    `time snort --suppress-config-log --require-rule-sid -r pcap/boring/one_packet.pcap -c #{snort_conf} -T`
   end
 
   watch(%r{^test.rules}) do |m|
