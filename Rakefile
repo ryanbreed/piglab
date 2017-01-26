@@ -1,6 +1,10 @@
-require 'erb'
 require 'piglab'
-
+require 'pry'
+require 'erb'
+SNORT_CONF='conf/generated.conf'
+def current_config
+  File.read(SNORT_CONF)
+end
 namespace :snort do
   namespace :conf do
     desc "generate full config"
@@ -8,8 +12,11 @@ namespace :snort do
       config = Piglab::Project.snort_defaults
       puts "generating sections: #{config.keys.map(&:to_s).join(', ')}"
       project = Piglab.project(config: config)
-      File.open('conf/generated.conf','w') do |snort|
-        snort.write(project.render_snort_conf(expand: true))
+      generated = project.render_snort_conf(expand: true)
+      if generated!=current_config
+        File.open(SNORT_CONF,'w') { |snort| snort.write(generated) }
+      else
+        puts "no updates; leaving #{SNORT_CONF} alone"
       end
     end
     desc "generate ruletest config"
@@ -17,8 +24,11 @@ namespace :snort do
       config = Piglab::Project.snort_defaults(without: [:rules_base,:rules_so_stubs])
       puts "generating sections: #{config.keys.map(&:to_s).join(', ')}"
       project = Piglab.project(config: config)
-      File.open('conf/generated.conf','w') do |snort|
-        snort.write(project.render_snort_conf(expand: true))
+      generated = project.render_snort_conf(expand: true)
+      if generated!=current_config
+        File.open('conf/generated.conf','w') { |snort| snort.write(generated) }
+      else
+        puts "no updates; leaving #{SNORT_CONF} alone"
       end
     end
     desc "generate nostub config"
@@ -26,8 +36,11 @@ namespace :snort do
       config = Piglab::Project.snort_defaults(without: [:rules_so_stubs])
       puts "generating sections: #{config.keys.map(&:to_s).join(', ')}"
       project = Piglab.project(config: config)
-      File.open('conf/generated.conf','w') do |snort|
-        snort.write(project.render_snort_conf(expand: true))
+      generated = project.render_snort_conf(expand: true)
+      if generated!=current_config
+        File.open('conf/generated.conf','w') { |snort| snort.write(generated) }
+      else
+        puts "no updates; leaving #{SNORT_CONF} alone"
       end
     end
   end
@@ -42,19 +55,21 @@ namespace :snort do
   namespace :run do
     desc "run all rules against all pcaps"
     task :all => "snort:conf" do
-      conf="conf/generated.conf"
-      pcap="pcap"
-      puts "running #{conf} against #{pcap}"
-      %x{ snort --suppress-config-log -q -c #{conf} --pcap-dir #{pcap} --pcap-reset --pcap-show }
+      %x{ snort --suppress-config-log -q -c conf/generated.conf --pcap-dir pcap --pcap-reset --pcap-show }
     end
     desc "run all rules against specific pcap collections"
-    task :only => "snort:conf" do
-      %x{ snort --suppress-config-log -c conf/generated.conf --pcap-dir pcap }
+    task :only, [:pcap] => "snort:conf:full" do |task,args|
+      dir=File.join('pcap',args[:pcap])
+      %x{ snort -c conf/generated.conf --pcap-show --pcap-reset --pcap-dir #{dir}}
     end
   end
   desc "generate so_rule stubs"
   task :so_stubs => "snort:conf:nostubs" do
-    %x{ snort --suppress-config-log -q -c conf/generated_nostubs.conf --dump-dynamic-rules=so_rule_stubs }
+    template='templates/generated_so_rules.conf.erb'
+    %x{ snort --suppress-config-log -q -c conf/generated.conf --dump-dynamic-rules=conf/so_rule_stubs }
+    tmpl=ERB.new(File.read(template),nil,'<>>-')
+    state=binding
+    File.open('conf/included_so_rules.conf','w') {|f| f.write(tmpl.result(state))}
   end
 end
 require "bundler/gem_tasks"

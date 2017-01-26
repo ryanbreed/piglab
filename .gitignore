@@ -1,3 +1,4 @@
+/conf/so_rule_stubs/*.rules
 /stage/
 /pcap/
 /extracts/

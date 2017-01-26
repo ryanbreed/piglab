@@ -1,0 +1,7 @@
+<% 
+  Dir.glob('conf/so_rule_stubs/*.rules')
+     .map {|r| File.basename(r)}
+     .each do |fname|
+%>
+include $SO_RULE_PATH/<%= fname %>
+<% end -%>

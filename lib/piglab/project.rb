@@ -10,6 +10,7 @@ module Piglab
         engine_decoder:   "engine_decoder.conf",
         engine_detection: "engine_detection.conf",
         engine_preproc:   "engine_preproc.conf",
+        rules_preproc:    "included_preproc_rules.conf",
         rules_base:       "included_rules.conf",
         rules_so_stubs:   "included_so_rules.conf",
         rules_local:      'included_local.conf',
