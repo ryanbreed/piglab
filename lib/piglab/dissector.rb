@@ -23,6 +23,10 @@ module Piglab
       yield self if block_given?
       self
     end
+
+    def to_byte_match(str)
+      format('|%s|', str.bytes.map {|b| b.to_s(16)}.join(" "))
+    end
   
     private
     def read_streams(dir=@dir)

@@ -16,6 +16,7 @@
 /pkg/
 /spec/reports/
 /tmp/
+/vendor/metasploit-framework
 
 /conf/generated.conf
 # rspec failure tracking
