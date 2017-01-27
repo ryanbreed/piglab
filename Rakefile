@@ -2,15 +2,16 @@ require 'piglab'
 require 'pry'
 require 'erb'
 SNORT_CONF='conf/generated.conf'
+
 def current_config
-  File.read(SNORT_CONF)
+  File.exist?(SNORT_CONF) ?  File.read(SNORT_CONF) : ""
 end
+
 namespace :snort do
   namespace :conf do
     desc "generate full config"
     task :full do
       config = Piglab::Project.snort_defaults
-      puts "generating sections: #{config.keys.map(&:to_s).join(', ')}"
       project = Piglab.project(config: config)
       generated = project.render_snort_conf(expand: true)
       if generated!=current_config
@@ -22,7 +23,6 @@ namespace :snort do
     desc "generate ruletest config"
     task :ruletest do
       config = Piglab::Project.snort_defaults(without: [:rules_base,:rules_so_stubs])
-      puts "generating sections: #{config.keys.map(&:to_s).join(', ')}"
       project = Piglab.project(config: config)
       generated = project.render_snort_conf(expand: true)
       if generated!=current_config
@@ -34,7 +34,6 @@ namespace :snort do
     desc "generate nostub config"
     task :nostubs do
       config = Piglab::Project.snort_defaults(without: [:rules_so_stubs])
-      puts "generating sections: #{config.keys.map(&:to_s).join(', ')}"
       project = Piglab.project(config: config)
       generated = project.render_snort_conf(expand: true)
       if generated!=current_config
@@ -47,20 +46,27 @@ namespace :snort do
   namespace :test do
     desc "run test rules against all pcaps"
     task :all => "snort:conf:ruletest" do
+      snort_cmd = %w{ snort -c conf/generated.conf -q --suppress-config-log --pcap-show --pcap-reset --pcap-dir pcap}
+      IO.popen(snort_cmd,"r").readlines.each {|l| puts l}
     end
     desc "run test rules against specific pcap collection"
-    task :only => "snort:conf:ruletest" do
+    task :only, [:pcap] => "snort:conf:ruletest" do |task,args|
+      dir=File.join('pcap',args[:pcap])
+      snort_cmd = %w{ snort -c conf/generated.conf -q --suppress-config-log --pcap-show --pcap-reset --pcap-dir}.push(dir)
+      IO.popen(snort_cmd,"r").readlines.each {|l| puts l}
     end
   end
   namespace :run do
     desc "run all rules against all pcaps"
     task :all => "snort:conf" do
-      %x{ snort --suppress-config-log -q -c conf/generated.conf --pcap-dir pcap --pcap-reset --pcap-show }
+      snort_cmd = %w{ snort -c conf/generated.conf -q --suppress-config-log --pcap-show --pcap-reset --pcap-dir pcap}
+      IO.popen(snort_cmd,"r").readlines.each {|l| puts l}
     end
     desc "run all rules against specific pcap collections"
     task :only, [:pcap] => "snort:conf:full" do |task,args|
       dir=File.join('pcap',args[:pcap])
-      %x{ snort -c conf/generated.conf --pcap-show --pcap-reset --pcap-dir #{dir}}
+      snort_cmd = %w{ snort -c conf/generated.conf -q --suppress-config-log --pcap-show --pcap-reset --pcap-dir}.push(dir)
+      IO.popen(snort_cmd,"r").readlines.each {|l| puts l}
     end
   end
   desc "generate so_rule stubs"
@@ -69,7 +75,7 @@ namespace :snort do
     %x{ snort --suppress-config-log -q -c conf/generated.conf --dump-dynamic-rules=conf/so_rule_stubs }
     tmpl=ERB.new(File.read(template),nil,'<>>-')
     state=binding
-    File.open('conf/included_so_rules.conf','w') {|f| f.write(tmpl.result(state))}
+    File.open('conf/generated_so_includes.conf','w') {|f| f.write(tmpl.result(state))}
   end
 end
 require "bundler/gem_tasks"

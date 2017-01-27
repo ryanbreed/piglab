@@ -12,7 +12,7 @@ module Piglab
         engine_preproc:   "engine_preproc.conf",
         rules_preproc:    "included_preproc_rules.conf",
         rules_base:       "included_rules.conf",
-        rules_so_stubs:   "included_so_rules.conf",
+        rules_so_stubs:   "generated_so_includes.conf",
         rules_local:      'included_local.conf',
         rules_test:       nil
       }.reject {|k,v| without.include?(k)}
