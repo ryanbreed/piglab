@@ -1,5 +1,0 @@
-ipvar PGSQL_SERVERS [172.20.1.238,172.20.1.10]
-portvar PGSQL_PORTS [5432]
-
-alert tcp $EXTERNAL_NET any -> $PGSQL_SERVERS $PGSQL_PORTS (msg:"SERVER-POSTGRES dml"; flow:to_server,established; pcre:"/(SELECT|INSERT|UPDATE|DELETE)/i"; classtype:not-suspicious; sid:1500001; rev:1;)
-alert tcp $EXTERNAL_NET any -> $PGSQL_SERVERS $PGSQL_PORTS (msg:"SERVER-POSTGRES alter user with superuser"; flow:to_server,established; content:"ALTER USER"; nocase; content:"WITH SUPERUSER"; nocase; within:32; classtype:attempted-admin; sid:1500002; rev:1;)
