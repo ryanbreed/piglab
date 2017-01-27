@@ -8,8 +8,10 @@ def current_config
 end
 
 namespace :snort do
+
+  desc "generate full config"
+  task :conf => 'snort:conf:full'
   namespace :conf do
-    desc "generate full config"
     task :full do
       config = Piglab::Project.snort_defaults
       project = Piglab.project(config: config)
@@ -43,8 +45,9 @@ namespace :snort do
       end
     end
   end
+  desc "run test rules against all pcaps"
+  task :test => "snort:test:all"
   namespace :test do
-    desc "run test rules against all pcaps"
     task :all => "snort:conf:ruletest" do
       snort_cmd = %w{ snort -c conf/generated.conf -q --suppress-config-log --pcap-show --pcap-reset --pcap-dir pcap}
       IO.popen(snort_cmd,"r").readlines.each {|l| puts l}
@@ -56,9 +59,10 @@ namespace :snort do
       IO.popen(snort_cmd,"r").readlines.each {|l| puts l}
     end
   end
+  desc "run all rules against all pcaps"
+  task :run => "snort:run:all"
   namespace :run do
-    desc "run all rules against all pcaps"
-    task :all => "snort:conf" do
+    task :all => "snort:conf:full" do
       snort_cmd = %w{ snort -c conf/generated.conf -q --suppress-config-log --pcap-show --pcap-reset --pcap-dir pcap}
       IO.popen(snort_cmd,"r").readlines.each {|l| puts l}
     end
