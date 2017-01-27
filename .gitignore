@@ -1,3 +1,4 @@
+/conf/generated_so_includes.conf
 /conf/so_rule_stubs/*.rules
 /stage/
 /pcap/
