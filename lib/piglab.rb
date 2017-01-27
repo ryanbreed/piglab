@@ -13,9 +13,10 @@ require 'piglab/util'
 require 'piglab/dissector'
 
 module Piglab
-
   def self.project(*args)
     Piglab::Project.new(*args)
   end
-
+  def self.dissector(*args)
+    Piglab::Dissector.new(*args)
+  end
 end

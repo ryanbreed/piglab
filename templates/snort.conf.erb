@@ -17,7 +17,15 @@ include reference.config
 include <%= filename %>
 <% end %>
 <% end -%>
+<% if File.exist?(test_rules = File.join(@root,'test.rules')) %>
 ##
+## BEGIN TEST RULES: <%= format('%s@%s:%s',ENV['USER'],ENV['HOSTNAME'],test_rules) %>
+##
+<%= File.read(test_rules) %>
+##
+##
+##
+<% end -%>
 ## LAST COMMIT
 <%= git_last_commit %>
 ################################
