@@ -10,9 +10,7 @@ require 'monkeypatches'
 require "piglab/version"
 require 'piglab/project'
 require 'piglab/util'
-require 'piglab/regexes'
 require 'piglab/dissector'
-require 'piglab/wireshark_stream'
 
 module Piglab
   def self.project(*args)

@@ -5,7 +5,6 @@ module Piglab
       {
         var_net:          "net_vars.conf",
         var_path:         "path_vars.conf",
-        output:           "output.conf",
         engine_dynamic:   "engine_dynamic_#{target}.conf",
         engine_decoder:   "engine_decoder.conf",
         engine_detection: "engine_detection.conf",
@@ -34,7 +33,8 @@ module Piglab
       self
     end
 
-    def render_snort_conf(expand: nil, template: 'snort.conf.erb')
+    def render_snort_conf(expand: nil, template: 'snort.conf.erb', repo_commit: false, repo_status: false)
+      @repo_commit, @repo_status = repo_commit, repo_status
       @expand_sections= expand unless expand.nil?
       snort_conf_erb = File.join(templates, template)
       tpl = ERB.new(File.read(snort_conf_erb),nil,"<>>-")
@@ -60,14 +60,13 @@ module Piglab
       }
     end
 
-
-
     def git_last_commit
       IO.popen("git log -1")
         .readlines
         .map {|line| format('## %s', line)}
         .join
     end
+
     def git_status
       IO.popen("git status -b -s -uall --ignore-submodules").readlines
         .map {|line| format('## %s',line)}

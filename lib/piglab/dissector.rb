@@ -1,6 +1,5 @@
 module Piglab
   class Dissector
-    include Piglab::Regexes
     attr_accessor :samples, :sample_glob, :grok_glob
     attr_accessor :patterns
     attr_reader   :pile

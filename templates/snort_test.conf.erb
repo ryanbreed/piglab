@@ -1,4 +1,5 @@
 ##
+## TARGET PLATFORM: <%= RbConfig::CONFIG["target_os"] %>
 ## INCLUDED SECTIONS: <%= @config.reject {|k,v| v.nil?}.keys.map(&:to_s).join(", ") %>
 ##
 ## PREAMBLE
@@ -16,12 +17,15 @@ include reference.config
 include <%= filename %>
 <% end %>
 <% end -%>
-<% if @repo_status -%>
-## REPO STATUS
-<%= git_status %>
+<% if File.exist?(test_rules = File.join(@root,'test.rules')) %>
+##
+## BEGIN TEST RULES: <%= format('%s@%s:%s',ENV['USER'],ENV['HOSTNAME'],test_rules) %>
+##
+<%= File.read(test_rules) %>
+##
+##
+##
 <% end -%>
-<% if @repo_commit -%>
 ## LAST COMMIT
 <%= git_last_commit %>
-<% end -%>
 ################################
