@@ -17,7 +17,8 @@ case $(uname -s) in
     ;;
   *)
     echo "unknown OS - yer on yer own!"
-fi
+    ;;
+esac
 
 for d in pcap/{boring,shells,infections} log tmp extracts/{text,bin} ; do
   do mkdir -v "$d"
