@@ -20,12 +20,12 @@ case $(uname -s) in
     ;;
 esac
 
-for d in pcap/{boring,shells,infections} log tmp extracts/{text,bin} ; do
-  do mkdir -v "$d"
+for d in pcap/positive pcap/negative pcap/control log tmp extracts/text ; do
+  mkdir -vp "$d"
 done
 
 test -d $HOME/opt/bundles/piglab || mkdir -p $HOME/opt/bundles/piglab
 
 
-gem install bundler
+which bundler || gem install bundler
 bundle install --path=$HOME/opt/bundles/piglab
