@@ -3,5 +3,11 @@ set -euo pipefail
 IFS=$'\n\t'
 set -vx
 
+if [[ $UID -eq 0 || $EUID -eq 0 ]]; then 
+  echo "installing packages only. drop to user to install bundle"
+  yum -y install epel-release libnghttp2 snort yajl wireshark2 git gmp-devel postgresql-devel sqlite-devel zlib-devel ruby233
+  exit 0
+fi
+
 gem install bundler
 bundle install
