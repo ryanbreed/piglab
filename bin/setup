@@ -3,7 +3,7 @@ set -euo pipefail
 IFS=$'\n\t'
 set -vx
 
-case uname -s in 
+case $(uname -s) in 
   'Darwin')
     brew install daq snort wireshark postgresql
     ;;
