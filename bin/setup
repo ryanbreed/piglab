@@ -3,11 +3,28 @@ set -euo pipefail
 IFS=$'\n\t'
 set -vx
 
-if [[ $UID -eq 0 || $EUID -eq 0 ]]; then 
-  echo "installing packages only. drop to user to install bundle"
-  yum -y install epel-release libnghttp2 snort yajl wireshark2 git gmp-devel postgresql-devel sqlite-devel zlib-devel ruby233
-  exit 0
+case uname -s in 
+  'Darwin')
+    brew install daq snort wireshark postgresql
+    ;;
+  'Linux')
+    if [ -f /etc/redhat-release ]; then 
+      if [[ $UID -eq 0 || $EUID -eq 0 ]]; then 
+        echo "installing packages only. drop to user to install bundle"
+        yum -y install epel-release libnghttp2 snort yajl wireshark2 git gmp-devel postgresql-devel sqlite-devel zlib-devel ruby233
+      fi
+    fi
+    ;;
+  *)
+    echo "unknown OS - yer on yer own!"
 fi
 
+for d in pcap/{boring,shells,infections} log tmp extracts/{text,bin} ; do
+  do mkdir -v "$d"
+done
+
+test -d $HOME/opt/bundles/piglab || mkdir -p $HOME/opt/bundles/piglab
+
+
 gem install bundler
-bundle install
+bundle install --path=$HOME/opt/bundles/piglab
