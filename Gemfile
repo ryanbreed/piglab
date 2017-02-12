@@ -4,3 +4,4 @@ source 'https://rubygems.org'
 gemspec
 
 gem 'metasploit-framework', git: 'https://github.com/ryanbreed/metasploit-framework.git', branch: :master
+gem 'crabstone', git: 'https://github.com/ryanbreed/crabstone', branch: 'master'
