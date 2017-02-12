@@ -11,6 +11,7 @@ require "piglab/version"
 require 'piglab/project'
 require 'piglab/util'
 require 'piglab/dissector'
+require 'piglab/payload_generators'
 
 module Piglab
   def self.project(*args)
@@ -29,9 +30,9 @@ module Piglab
     require 'msf/base'
     require 'msf/core/payload_generator'
     create_opts={
-      module_types: [ 
-        ::Msf::MODULE_PAYLOAD, 
-        ::Msf::MODULE_ENCODER, 
+      module_types: [
+        ::Msf::MODULE_PAYLOAD,
+        ::Msf::MODULE_ENCODER,
         ::Msf::MODULE_NOP
       ],
       'DisableDataBase' => true
