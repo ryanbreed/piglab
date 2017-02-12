@@ -1,0 +1,10 @@
+#!/bin/env ruby
+gemroot=File.expand_path(File.join(__dir__,'..'))
+gem_lib=File.join(gemroot,'lib')
+$LOAD_PATH.push(gem_lib)
+require 'piglab'
+require 'thor'
+require 'piglab/cli'
+
+cli=Piglab::Cli
+cli.start(ARGV)
