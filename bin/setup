@@ -5,7 +5,7 @@ set -vx
 
 case $(uname -s) in 
   'Darwin')
-    brew install daq snort wireshark postgresql
+    brew install daq snort wireshark postgresql capstone
     ;;
   'Linux')
     if [ -f /etc/redhat-release ]; then 
