@@ -18,6 +18,8 @@ Gemfile.lock
 /spec/reports/
 /tmp/
 /vendor/metasploit-framework
+/rules/src/vrt
+/rules/out/
 
 /conf/generated.conf
 # rspec failure tracking

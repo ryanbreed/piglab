@@ -1,12 +1,35 @@
 require 'piglab'
 require 'pry'
 require 'erb'
+require 'net/http'
+require 'uri'
 SNORT_CONF='conf/generated.conf'
 
 def current_config
   File.exist?(SNORT_CONF) ?  File.read(SNORT_CONF) : ""
 end
 
+def vrt_oinkcode_params
+  { oinkcode: ENV['SNORT_OINKCODE'] }.reject {|k,v| v.nil? }
+end
+
+def vrt_uri 
+  URI(ENV.fetch("SNORT_RULE_SNAPSHOT","https://snort.org/rules/snortrules-snapshot-2990.tar.gz"))
+end
+
+
+def vrt_download
+  uri = vrt_uri
+  uri.params = vrt_oinkcode_params
+  res = Net::HTTP.get_response(uri)
+end
+
+namespace :vrt do
+  desc "download latest subscription ruleset"
+  task :subscription do |t|
+    
+  end
+end
 namespace :snort do
 
   desc "generate full config"
